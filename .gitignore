@@ -1,6 +1,10 @@
 # Arquivos de ambiente
 .env
 
+# Arquivos de documentação (manter apenas README.md)
+*.md
+!README.md
+
 # Cache Python
 __pycache__/
 *.py[cod]
