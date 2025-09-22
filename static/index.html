@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agno Multi-Agent System</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Modal de Login -->
+        <div class="modal" id="loginModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Login Simples</h3>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="usernameInput" placeholder="Digite seu nome de usuário" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                    <button onclick="loginUser()">Entrar</button>
+                </div>
+            </div>
+        </div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-robot"></i> Agno Agents</h2>
+                <button class="new-chat-btn" onclick="createNewConversation()">
+                    <i class="fas fa-plus"></i> Novo Chat
+                </button>
+            </div>
+            <div class="chat-history" id="chatHistory">
+                <div class="chat-item active">
+                    <i class="fas fa-comments"></i>
+                    <span>Conversa Atual</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-content">
+                    <h1>Assistente Multi-Agente</h1>
+                    <p>Converse com nosso sistema de agentes especializados</p>
+                </div>
+                <div class="header-actions">
+                    <button class="artifacts-toggle-btn" onclick="toggleArtifacts()" title="Abrir/Fechar Artefatos">
+                        <i class="fas fa-palette"></i>
+                        <span>Artefatos</span>
+                        <span class="artifacts-count" id="artifactsCount">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-container">
+                <div class="messages" id="messages">
+                    <div class="message assistant">
+                        <div class="avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="name">Supervisor</span>
+                                <span class="time">Agora</span>
+                            </div>
+                            <div class="message-text">
+                                Olá! Sou o supervisor de agentes especializados. Posso ajudar você com:
+                                <br><br>
+                                🔍 <strong>Pesquisas</strong> - Busco informações atualizadas na web<br>
+                                💻 <strong>Desenvolvimento Web</strong> - Crio sites com JavaScript puro<br><br>
+                                O que você gostaria de fazer?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typing indicator -->
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span>Agente está digitando...</span>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Digite sua mensagem..."
+                        rows="1"
+                        onkeydown="handleKeyDown(event)"
+                        oninput="adjustTextareaHeight(this)"
+                    ></textarea>
+                    <button id="sendButton" onclick="sendMessage()" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Artifacts Panel -->
+        <div class="artifacts-panel" id="artifactsPanel">
+            <div class="artifacts-header">
+                <h3><i class="fas fa-palette"></i> Artefatos</h3>
+                <div class="artifacts-actions">
+                    <button class="clear-btn" onclick="clearOldArtifacts()" title="Limpar Artefatos">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="close-btn" onclick="toggleArtifacts()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="artifacts-content" id="artifactsContent">
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <p>Nenhum artefato disponível</p>
+                    <small>Os artefatos aparecerão aqui quando os agentes gerarem resultados</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Artifact Modal -->
+    <div class="modal" id="artifactModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Artefato</h3>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+        </div>
+    </div>
+
+    <script>
+function showLoginModal() {
+    document.getElementById('loginModal').style.display = 'flex';
+}
+
+function loginUser() {
+    const username = document.getElementById('usernameInput').value.trim();
+    if (username) {
+        localStorage.setItem('currentUser', username);
+        document.getElementById('loginModal').style.display = 'none';
+        loadUserData();
+    }
+}
+
+window.addEventListener('load', function() {
+    if (!localStorage.getItem('currentUser')) {
+        showLoginModal();
+    } else {
+        loadUserData();
+    }
+});
+</script>
+<script src="/static/script.js"></script>
+</body>
+</html>

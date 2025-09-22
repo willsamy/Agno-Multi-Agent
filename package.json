@@ -1,0 +1,32 @@
+{
+  "name": "agno-multi-agent-system",
+  "version": "1.0.0",
+  "description": "Sistema Multi-Agente com FastAPI para pesquisa e desenvolvimento web",
+  "main": "main.py",
+  "scripts": {
+    "start": "python main.py",
+    "dev": "python main.py",
+    "build": "echo 'Build completed'",
+    "install": "pip install -r requirements.txt"
+  },
+  "keywords": [
+    "fastapi",
+    "multi-agent",
+    "ai",
+    "websocket",
+    "python"
+  ],
+  "author": "Agno Team",
+  "license": "MIT",
+  "engines": {
+    "python": ">=3.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seu-usuario/agno-multi-agent-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seu-usuario/agno-multi-agent-system/issues"
+  },
+  "homepage": "https://github.com/seu-usuario/agno-multi-agent-system#readme"
+}
