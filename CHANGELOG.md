@@ -1,6 +1,64 @@
-# Changelog
+# Changelog - Agno Multi-Agent System
 
-Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+## [22/01/2025] - Push para GitHub e Deploy na Vercel
+
+### Repositório GitHub Configurado
+- Repositório remoto configurado: `https://github.com/willsamy/Agno-Multi-Agent.git`
+- Branch principal renomeada para `main`
+- Push inicial realizado com sucesso
+- 24 objetos enviados (43.97 KiB)
+- Projeto disponível publicamente no GitHub
+
+### Arquivos Adicionados
+- `vercel.json` - Configuração para deploy na Vercel com FastAPI
+- `package.json` - Metadados do projeto e scripts de build
+- `.env.production` - Template de variáveis de ambiente para produção
+- `DEPLOY_GUIDE.md` - Guia completo de deploy na Vercel
+
+### Arquivos Modificados
+- `.gitignore` - Adicionadas regras para arquivos da Vercel, logs e cache
+- `CHANGELOG.md` - Documentação das mudanças realizadas
+
+### Configurações
+- Repositório Git inicializado
+- Commit inicial realizado com todos os arquivos
+- Projeto preparado para deploy automático na Vercel
+- Configurações otimizadas para produção
+
+## [22/01/2025] - Preparação para Deploy na Vercel
+
+### Adicionado
+- **vercel.json**: Configuração completa para deploy FastAPI na Vercel
+  - Build com @vercel/python
+  - Rotas para arquivos estáticos e WebSocket
+  - Timeout de 30 segundos para funções
+  - Configuração PYTHONPATH
+- **package.json**: Metadados e scripts do projeto
+  - Scripts de build, start e desenvolvimento
+  - Compatibilidade com Python 3.8+
+  - Informações de repositório e licença
+- **.env.production**: Template de variáveis de ambiente para produção
+  - Configurações otimizadas para Vercel
+  - Múltiplas chaves de API suportadas
+  - Debug desabilitado para produção
+- **DEPLOY_GUIDE.md**: Guia completo de deploy
+  - Instruções passo-a-passo para Vercel
+  - Configuração de variáveis de ambiente
+  - Troubleshooting e limitações
+  - Comandos úteis para manutenção
+
+### Modificado
+- **.gitignore**: Atualizado para deploy
+  - Arquivos específicos da Vercel
+  - Logs e cache
+  - Arquivos de IDE e sistema
+  - Variáveis de ambiente locais
+
+### Configurado
+- **Repositório Git**: Inicializado e commitado
+  - Todos os arquivos adicionados
+  - Commit inicial preparado
+  - Pronto para push para repositório remoto
 
 ## [22/09/2025] - Inicialização do Projeto
 
