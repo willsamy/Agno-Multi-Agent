@@ -1,34 +1,36 @@
-// WebSocket connection
-let ws = null;
+// HTTP Chat connection (substitui WebSocket para Vercel)
+let isConnected = true;
 let artifacts = [];
 let conversations = {};
 let currentConversationId = null;
 let currentUser = localStorage.getItem('currentUser');
 
-// Initialize WebSocket
-function initWebSocket() {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+// Initialize HTTP connection (substitui WebSocket)
+function initConnection() {
+    console.log('🔗 [CONEXÃO] Sistema HTTP inicializado');
+    isConnected = true;
+    updateSendButton();
     
-    ws.onopen = function() {
-        console.log('🔗 [CONEXÃO] WebSocket conectado');
-        updateSendButton();
-    };
-    
-    ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        console.log('📨 [MENSAGEM] Recebida:', data); // Debug
-        handleMessage(data);
-    };
-    
-    ws.onclose = function() {
-        console.log('🔌 [DESCONEXÃO] WebSocket desconectado');
-        setTimeout(initWebSocket, 3000);
-    };
-    
-    ws.onerror = function(error) {
-        console.error('❌ [ERRO] WebSocket error:', error);
-    };
+    // Test connection
+    testConnection();
+}
+
+// Test if API is working
+async function testConnection() {
+    try {
+        const response = await fetch('/api/health');
+        if (response.ok) {
+            console.log('✅ [CONEXÃO] API funcionando corretamente');
+            isConnected = true;
+        } else {
+            console.log('⚠️ [CONEXÃO] API com problemas');
+            isConnected = false;
+        }
+    } catch (error) {
+        console.error('❌ [CONEXÃO] Erro ao testar API:', error);
+        isConnected = false;
+    }
+    updateSendButton();
 }
 
 // Handle incoming messages
@@ -70,12 +72,12 @@ function handleMessage(data) {
     saveCurrentConversation();
 }
 
-// Send message
-function sendMessage() {
+// Send message via HTTP (substitui WebSocket)
+async function sendMessage() {
     const input = document.getElementById('messageInput');
     const message = input.value.trim();
     
-    if (!message || !ws || ws.readyState !== WebSocket.OPEN) return;
+    if (!message || !isConnected) return;
     
     console.log('📤 [ENVIO] Enviando mensagem do usuário:', message);
     
@@ -93,11 +95,38 @@ function sendMessage() {
     // Show typing indicator
     showTypingIndicator();
     
-    // Send to WebSocket
-    ws.send(JSON.stringify({
-        type: 'message',
-        content: message
-    }));
+    try {
+        // Send via HTTP
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'message',
+                content: message,
+                conversation_id: currentConversationId
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        console.log('📨 [RESPOSTA] Recebida via HTTP:', result);
+        
+        if (result.success && result.data) {
+            handleMessage(result.data);
+        } else {
+            throw new Error(result.error || 'Erro desconhecido na resposta');
+        }
+        
+    } catch (error) {
+        console.error('❌ [ERRO] Falha ao enviar mensagem:', error);
+        hideTypingIndicator();
+        addMessage('assistant', `❌ Erro ao enviar mensagem: ${error.message}`);
+    }
     
     console.log('✅ [ENVIO] Mensagem enviada e conversa salva');
 }
@@ -560,12 +589,16 @@ function adjustTextareaHeight(textarea) {
 }
 
 function updateSendButton() {
-    const input = document.getElementById('messageInput');
-    const button = document.getElementById('sendButton');
-    const hasText = input.value.trim().length > 0;
-    const isConnected = ws && ws.readyState === WebSocket.OPEN;
+    const sendButton = document.getElementById('sendButton');
+    const messageInput = document.getElementById('messageInput');
     
-    button.disabled = !hasText || !isConnected;
+    if (sendButton && messageInput) {
+        const hasMessage = messageInput.value.trim().length > 0;
+        const canSend = isConnected && hasMessage;
+        
+        sendButton.disabled = !canSend;
+        sendButton.style.opacity = canSend ? '1' : '0.5';
+    }
 }
 
 function handleKeyDown(event) {
@@ -810,7 +843,11 @@ document.addEventListener('DOMContentLoaded', function() {
     loadArtifacts();
     updateChatHistory();
     updateArtifactsCounter();
-    initWebSocket();
+    // Initialize connection when page loads
+    initConnection();
+    
+    // Test connection periodically
+    setInterval(testConnection, 30000); // Test every 30 seconds
     
     const input = document.getElementById('messageInput');
     input.addEventListener('input', () => updateSendButton());
