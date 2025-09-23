@@ -8,14 +8,11 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-# Add the parent directory to the Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Import the isolated agents
+from agents import SupervisorAgent
 
-# Import the supervisor from main
-from main import SupervisorAgent
-
-# Create FastAPI app instance
-app = FastAPI()
+# Create FastAPI app instance for API only
+app = FastAPI(title="Agno Chat API", version="1.0.0")
 
 # Initialize supervisor
 supervisor = SupervisorAgent()
