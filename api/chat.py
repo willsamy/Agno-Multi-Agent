@@ -8,14 +8,26 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-# Import the isolated agents
-from agents import SupervisorAgent
+# Remover importação direta para evitar falhas na inicialização em ambientes serverless
+# from agents import SupervisorAgent
 
 # Create FastAPI app instance for API only
 app = FastAPI(title="Agno Chat API", version="1.0.0")
 
-# Initialize supervisor
-supervisor = SupervisorAgent()
+# Implementar importação lazy do SupervisorAgent
+_supervisor = None
+
+def get_supervisor():
+    global _supervisor
+    if _supervisor is None:
+        try:
+            from agents import SupervisorAgent
+            _supervisor = SupervisorAgent()
+        except Exception as e:
+            # Logar erro sem quebrar endpoints simples como /api/health
+            print(f"❌ [INIT] Falha ao inicializar SupervisorAgent: {str(e)}")
+            _supervisor = None
+    return _supervisor
 
 class ChatMessage(BaseModel):
     message: str
@@ -28,6 +40,20 @@ async def chat_endpoint(chat_message: ChatMessage):
     Substitui a funcionalidade WebSocket para compatibilidade com Vercel
     """
     try:
+        supervisor = get_supervisor()
+        if supervisor is None:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "success": False,
+                    "error": "Erro ao inicializar os agentes",
+                    "data": {
+                        "type": "error",
+                        "content": "Não foi possível inicializar o SupervisorAgent. Verifique as dependências e configurações em produção."
+                    }
+                }
+            )
+
         # Process the message using the supervisor
         response = await supervisor.process_request(chat_message.message)
         
